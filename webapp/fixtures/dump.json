@@ -1,0 +1,29 @@
+[
+{
+  "model": "webapp.task",
+  "pk": 1,
+  "fields": {
+    "description": "Помыть посуду",
+    "status": "new",
+    "date": "2024-07-22"
+  }
+},
+{
+  "model": "webapp.task",
+  "pk": 2,
+  "fields": {
+    "description": "Пропылесосить",
+    "status": "new",
+    "date": "2024-07-28"
+  }
+},
+{
+  "model": "webapp.task",
+  "pk": 3,
+  "fields": {
+    "description": "Вынести мусор",
+    "status": "new",
+    "date": "2024-08-08"
+  }
+}
+]
