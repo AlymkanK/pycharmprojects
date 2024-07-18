@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 
 from webapp.models import Task, status_choices
 
@@ -21,7 +22,7 @@ def create_task(request):
             status=request.POST.get("status"),
             date=request.POST.get("date")
         )
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect(reverse("todolist"))
 
 
 def task_detail(request, *args, pk, **kwargs):
