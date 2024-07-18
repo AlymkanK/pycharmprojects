@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block content %}
-<h1>Create Article</h1>
+<h1>Create task</h1>
 
 <form action="" method="post">
     {% csrf_token %}
-    <label>Title:</label><br/>
+    <label>Task::</label><br/>
     <input type="text" name="title"/><br/>
-    <label>Text:</label><br/>
+    <label>Status:</label><br/>
     <textarea name="content"></textarea><br/>
-    <label>Author:</label><br/>
+    <label>Due date:</label><br/>
     <input type="text" name="author"/><br/>
     <br/>
     <input type="submit" value="Send"/>
