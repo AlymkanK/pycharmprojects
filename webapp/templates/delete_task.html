@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form action = ''>
+        {% csrf_token %}
+        Вы действительно хотите удалить статью {{ task.decription }}?
+        <button type="submit">Да</button>
+    </form>
+    <a href="{% url 'tasks' %}">Нет</a>
+{% endblock %}
