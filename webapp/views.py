@@ -16,16 +16,34 @@ def index(request):
 
 def create_task(request):
     if request.method == "GET":
-        return render(request, "create_task.html",
-                      context= {'task':get_object_or_404(Task, pk=1)}
-                      )
+        return render(request, "create_task.html")
     else:
-        Task.objects.create(
-            description=request.POST.get("description"),
-            status=request.POST.get("status"),
-            date=request.POST.get("date")
-        )
-        return HttpResponseRedirect(reverse("todolist"))
+        description = request.POST.get("description"),
+        status = request.POST.get("status"),
+        date = request.POST.get("date")
+        errors = {}
+        if not description:
+            errors["description"] = "Описание обязательное поле"
+        elif len(description) > 50:
+            errors["description"] = "Длина поля не может быть больше чем 50"
+
+        if not status:
+            errors['status'] = "Статус обязатльное поле"
+        elif len(status) > 50:
+            errors["description"] = "Длина поля не может быть больше чем 50"
+
+        if not date:
+            errors['date'] = 'Дата обязательное поле'
+
+        if not errors:
+            task = Task.objects.create(
+                description=description,
+                status=status,
+                date=date
+            )
+            return redirect('task_detail', pk=task.pk)
+
+        return render(request, "create_task.html", context={"errors": errors})
 
 
 def task_detail(request, *args, pk, **kwargs):

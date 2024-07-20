@@ -7,8 +7,8 @@ status_choices = [('new', 'новая'), ('in_progress', 'в процессе'),
 
 class Task(models.Model):
     description = models.CharField(max_length=50, null=False, verbose_name='Название')
-    status = models.CharField(max_length=50, default='new', verbose_name='Статус')
-    date = models.DateField(max_length=50, null=False, verbose_name='Дата')
+    status = models.CharField(max_length=50, default='new', null=False, blank=False, verbose_name='Статус')
+    date = models.DateField(max_length=50, null=False, blank=False, verbose_name='Дата')
 
     def __str__(self):
         return f'{self.description} {self.status}'
