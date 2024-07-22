@@ -1,14 +1,10 @@
 {% extends "base.html" %}
-
-
-{% block links %}
-{% endblock %}
+{% block title %}create project{% endblock %}
 
 {% block content %}
-<h1>Create task</h1>
+<h1>Create project</h1>
 
-<form action="" method="post">
-    {% include 'partial/task_form.html' %}
-    <input type="submit" value="Send"/>
+<form action="{% url 'webapp:create_project' %}" method="post">
+    {% include 'partial/form.html' %}
 </form>
 {% endblock %}

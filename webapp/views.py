@@ -1,73 +1,64 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
+from django.shortcuts import redirect
 
-from webapp.models import Task, status_choices
-
-
-
-# Create your views here.
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from webapp.forms import ProjectForm
+from webapp.models import Project
 
 
-def index(request):
-    tasks = Task.objects.order_by('date')
-    return render(request, "index.html", context={"tasks": tasks})
+class ProjectListView(ListView):
+    model = Project
+    paginate_orphans = 1
+    paginate_by = 10
+    template_name = 'projects/list.html'
 
 
-def create_task(request):
-    if request.method == "GET":
-        return render(request, "create_task.html")
-    else:
-        description = request.POST.get("description"),
-        status = request.POST.get("status"),
-        date = request.POST.get("date")
-        errors = {}
-        if not description:
-            errors["description"] = "Описание обязательное поле"
-        elif len(description) > 50:
-            errors["description"] = "Длина поля не может быть больше чем 50"
+class ProjectDetailView(DetailView):
+    model = Project
+    template_name = 'projects/detail.html'
 
-        if not status:
-            errors['status'] = "Статус обязатльное поле"
-        elif len(status) > 50:
-            errors["description"] = "Длина поля не может быть больше чем 50"
-
-        if not date:
-            errors['date'] = 'Дата обязательное поле'
-
-        if not errors:
-            task = Task.objects.create(
-                description=description,
-                status=status,
-                date=date
-            )
-            return redirect('task_detail', pk=task.pk)
-
-        return render(request, "create_task.html", context={"errors": errors})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['milestone_list'] = self.object.milestones.all().order_by('-started_at')
+        return context
 
 
-def task_detail(request, *args, pk, **kwargs):
-    task = get_object_or_404(Task, pk=pk)
-    return render(request, "task_detail.html", context={"task": task})
+class ProjectCreateView(CreateView):
+    template_name = 'projects/create.html'
+    model = Project
+    form_class = ProjectForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('webapp:project_detail', kwargs={'pk': self.object.pk})
 
 
-def update_task(request, *args, pk, **kwargs):
-    if request.method == "GET":
-        return render(request, "update_task.html", {'status_choices': status_choices})
-    else:
-        Task.objects.create(
-            description=request.POST.get("description"),
-            status=request.POST.get("status"),
-            date=request.POST.get("date")
-        )
-        return redirect('task_detail', pk=pk)
+class ProjectUpdateView(UpdateView):
+    model = Project
+    template_name = 'projects/update.html'
+    form_class = ProjectForm
+    pk_url_kwarg = 'pk'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('webapp:project_detail', kwargs={'pk': self.object.pk})
 
 
-def delete_task(request, *args, pk, **kwargs):
-    if request.method == "GET":
-        task = get_object_or_404(Task, pk=pk)
-        return render(request, "delete_task.html", context={"task": task})
-    else:
-        task = get_object_or_404(Task, pk=pk)
-        task.delete()
-        return redirect('tasks')
+class ProjectDeleteView(DeleteView):
+    model = Project
+    success_url = reverse_lazy('webapp:project_list')
+    template_name = 'projects/delete.html'
+    pk_url_kwarg = 'pk'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        return super().dispatch(request, *args, **kwargs)

@@ -1,19 +1,137 @@
+from django.conf import settings
+
 from django.db import models
 
-# Create your models here.
 
-status_choices = [('new', 'новая'), ('in_progress', 'в процессе'), ('done', 'сделано')]
+class Issue(models.Model):
+    fk = models.ForeignKey(
+        'webapp.Milestone',
+        related_name='tasks',
+        on_delete=models.CASCADE,
+        verbose_name='Milestone',
+    )
 
+    title = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name='Title',
+    )
 
-class Task(models.Model):
-    description = models.CharField(max_length=50, null=False, verbose_name='Название')
-    status = models.CharField(max_length=50, default='new', null=False, blank=False, verbose_name='Статус')
-    date = models.DateField(max_length=50, null=False, blank=False, verbose_name='Дата')
+    description = models.TextField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name='Description',
+    )
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='issues',
+        on_delete=models.PROTECT,
+
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Time of creation',
+    )
+
+    started_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Start time',
+    )
+
+    ended_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='End time'
+    )
+
+    issue_status = models.ForeignKey(
+        'webapp.IssueStatus',
+        related_name='issue_statuses',
+        on_delete=models.CASCADE,
+        verbose_name='Issue status',
+    )
 
     def __str__(self):
-        return f'{self.description} {self.status}'
+        return self.title
 
-    class Meta:
-        db_table = 'tasks'
-        verbose_name = 'задача'
-        verbose_name_plural = 'задачи'
+
+class IssueType(models.Model):
+    name = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        verbose_name='Issue type',
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class IssueStatus(models.Model):
+    name = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        verbose_name='Issue status',
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Project(models.Model):
+    name = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name='Title',
+    )
+
+    description = models.TextField(
+        max_length=200,
+        null=False,
+        blank=False,
+        verbose_name='Description',
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Milestone(models.Model):
+    project = models.ForeignKey(
+        'webapp.Project',
+        related_name='milestones',
+        on_delete=models.CASCADE,
+        verbose_name='Project'
+    )
+
+    name = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name='Title',
+    )
+
+    description = models.TextField(
+        max_length=200,
+        null=False,
+        blank=False,
+        verbose_name='Description',
+    )
+
+    started_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Start time',
+    )
+
+    ended_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='End time'
+    )
+
+    def __str__(self):
+        return self.name
