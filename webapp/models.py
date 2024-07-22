@@ -1,137 +1,19 @@
-from django.conf import settings
-
 from django.db import models
 
-
-class Issue(models.Model):
-    fk = models.ForeignKey(
-        'webapp.Milestone',
-        related_name='tasks',
-        on_delete=models.CASCADE,
-        verbose_name='Milestone',
-    )
-
-    title = models.CharField(
-        max_length=50,
-        null=False,
-        blank=False,
-        verbose_name='Title',
-    )
-
-    description = models.TextField(
-        max_length=200,
-        null=True,
-        blank=True,
-        verbose_name='Description',
-    )
-
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='issues',
-        on_delete=models.PROTECT,
-
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Time of creation',
-    )
-
-    started_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Start time',
-    )
-
-    ended_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='End time'
-    )
-
-    issue_status = models.ForeignKey(
-        'webapp.IssueStatus',
-        related_name='issue_statuses',
-        on_delete=models.CASCADE,
-        verbose_name='Issue status',
-    )
-
-    def __str__(self):
-        return self.title
-
-
-class IssueType(models.Model):
-    name = models.CharField(
-        max_length=50,
-        null=True,
-        blank=True,
-        verbose_name='Issue type',
-    )
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
 
-
-class IssueStatus(models.Model):
-    name = models.CharField(
-        max_length=50,
-        null=True,
-        blank=True,
-        verbose_name='Issue status',
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class Project(models.Model):
-    name = models.CharField(
-        max_length=50,
-        null=False,
-        blank=False,
-        verbose_name='Title',
-    )
-
-    description = models.TextField(
-        max_length=200,
-        null=False,
-        blank=False,
-        verbose_name='Description',
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class Milestone(models.Model):
-    project = models.ForeignKey(
-        'webapp.Project',
-        related_name='milestones',
-        on_delete=models.CASCADE,
-        verbose_name='Project'
-    )
-
-    name = models.CharField(
-        max_length=50,
-        null=False,
-        blank=False,
-        verbose_name='Title',
-    )
-
-    description = models.TextField(
-        max_length=200,
-        null=False,
-        blank=False,
-        verbose_name='Description',
-    )
-
-    started_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Start time',
-    )
-
-    ended_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='End time'
-    )
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    added_date = models.DateTimeField(auto_now_add=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.URLField()
 
     def __str__(self):
         return self.name

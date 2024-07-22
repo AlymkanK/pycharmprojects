@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ object.name }}</h1>
+  <p>Описание: {{ object.description }}</p>
+  <p>Цена: {{ object.price }}</p>
+  <img src="{{ object.image }}" alt="{{ object.name }}">
+  <br><br>
+  <a href="{% url 'product_edit_view' object.pk %}">Редактировать</a>
+  <form action="{% url 'product_delete_view' object.pk %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <input type="submit" value="Удалить">
+  </form>
+  <a href="{% url 'products_view' %}">Вернуться к списку товаров</a>
+{% endblock %}
