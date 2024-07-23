@@ -1,8 +1,4 @@
  {% csrf_token %}
-    <label>Task::</label><br/>
-    <input type="text" value = "{{ task.description }}" name="title"/><br/>
-    <label>Status:</label><br/>
-    <textarea name="content">value = "{{ task.status }}"</textarea><br/>
-    <label>Due date:</label><br/>
-    <input type="text" value = "{{ task.description }}" name="author"/><br/>
-    <br/>
+ 
+ {{ form.as_p}}
+ <input type="submit" value = "{{ button_text }}/">

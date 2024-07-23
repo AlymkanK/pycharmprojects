@@ -2,8 +2,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
+from webapp.forms import TaskForm
 from webapp.models import Task, status_choices
-
+from webapp.validate import task_validate
 
 
 # Create your views here.
@@ -16,34 +17,23 @@ def index(request):
 
 def create_task(request):
     if request.method == "GET":
-        return render(request, "create_task.html")
+        form = TaskForm()
+        return render(request, "create_task.html", {"form": form})
     else:
-        description = request.POST.get("description"),
-        status = request.POST.get("status"),
-        date = request.POST.get("date")
-        errors = {}
-        if not description:
-            errors["description"] = "Описание обязательное поле"
-        elif len(description) > 50:
-            errors["description"] = "Длина поля не может быть больше чем 50"
-
-        if not status:
-            errors['status'] = "Статус обязатльное поле"
-        elif len(status) > 50:
-            errors["description"] = "Длина поля не может быть больше чем 50"
-
-        if not date:
-            errors['date'] = 'Дата обязательное поле'
-
-        if not errors:
+        form = TaskForm(data = request.POST)
+        if form.is_valid():
             task = Task.objects.create(
-                description=description,
-                status=status,
-                date=date
+                description = request.POST.get("description"),
+                status = request.POST.get("status"),
+                date = request.POST.get("date")
             )
             return redirect('task_detail', pk=task.pk)
 
-        return render(request, "create_task.html", context={"errors": errors})
+        return render(
+            request,
+            "create_task.html",
+            context={"form":form}
+        )
 
 
 def task_detail(request, *args, pk, **kwargs):
